@@ -1,0 +1,10 @@
+hola chicos:
+
+tomo 2 papeles -> los comparo el mayor lo dejo en la mesa
+tomo el papel que sigue y lo vuelvo a comparar el más grande lo dejo en la mesa
+
+el ultimo papel va a ser el menor. y lo guardo en otro lugar
+
+esto lo repito hasta que se ordene todo.
+
+para saber que esta ordenada. comparo el ultimo con todos para verificar que es el más gradne
