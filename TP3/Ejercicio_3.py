@@ -1,9 +1,8 @@
 print("Ejercicio 3 - Adivina el Número")
 numsecreto = 86
 i = 0
-num = int(input("Intenta adivinar el número secreto: "))
-while i <= 8:
-    num = int(input("Intenta adivinar de nuevo:"))
+while i < 8:
+    num = int(input("Intenta adivinar el número secreto: "))
     i = i + 1
     if num < numsecreto:
         print("El número ingresado es menor al correcto.")
@@ -12,4 +11,5 @@ while i <= 8:
     elif num == numsecreto:
         print("Ganaste.")
         break
-print("Perdiste.")
+    if i == 8:
+        print("Perdiste.")
