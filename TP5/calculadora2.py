@@ -25,20 +25,23 @@ while True:
     print("2 - Resta")
     print("3 - Multiplicación")
     print("4 - División")
+    print("5 - Salir")
     operacion = int(input("Seleccione una operación: "))
     if operacion == 1:
         x1, x2 = ingresar_datos()
         R = suma(x1, x2)
         print("El resultado es ", R)
-    if operacion == 2:
+    elif operacion == 2:
         x1, x2 = ingresar_datos()
         R = resta(x1, x2)
         print("El resultado es ", R)
-    if operacion == 3:
+    elif operacion == 3:
         x1, x2 = ingresar_datos()
         R = multiplicacion(x1, x2)
         print("El resultado es ", R)
-    if operacion == 4:
+    elif operacion == 4:
         x1, x2 = ingresar_datos()
         R = division(x1, x2)
         print("El resultado es ", R)
+    elif operacion == 5:
+        break
