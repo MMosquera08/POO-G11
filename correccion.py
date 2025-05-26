@@ -1,3 +1,5 @@
+import matplotlib.pyplot as plt
+
 print("Cálculos: Función Cuadrática.")
 a = float(input("Ingrese el coeficiente de a: "))
 b = float(input("Ingrese el coeficiente de b: "))
@@ -8,8 +10,8 @@ print("La Ordenada al Origen es: ",c)
 print("Calcular las raíces")
 D = b**2 - 4*a*c
 if D > 0:
-    x1 = (-b +- math.sqrt(2)(b**2 - 4*a*c)) / (2 * a)
-    x2 = (-b +- math.sqrt(2)(b**2 - 4*a*c)) / (2 * a)
+    x1 = -b +- (b**2 - 4*a*c)**0.5 / (2 * a)
+    x2 = -b +- (b**2 - 4*a*c)**0.5/ (2 * a)
     print("Tiene dos raíces reales: x1= ", x1, "y x2 = ", x2)
 elif D == 0:
     x = -b / (2 * a)
@@ -24,8 +26,7 @@ print("El vértice en x: " "",xv)
 print("El vértice en y:" "",yv)
 print("Fin de los cálculos.")
 
-import matplotlib.pyplot as plt
-import numpy as np
+
 
 a = 1
 b = 0
