@@ -11,7 +11,7 @@ t.speed(0)
 t.width(2)
 turtle.colormode(255)
 
-colores=["Red", "Orange", "Yellow", "Green", "Cyan", "Blue", "Purple"]
+colores=["Red", "Yellow", "Green", "Cyan", "Blue", "Purple"]
 
 for i in range(120):
          t.color(colores[i % len(colores)])
