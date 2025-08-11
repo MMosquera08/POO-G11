@@ -171,7 +171,7 @@ class Button:
 class Game:
     def __init__(self):
         self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-        pygame.display.set_caption("Mi Gato Virtual")
+        pygame.display.set_caption("Talking CAT")
         self.clock = pygame.time.Clock()
         self.font_large = pygame.font.Font(None, 48)
         self.font_medium = pygame.font.Font(None, 32)
@@ -213,7 +213,7 @@ class Game:
             Button(330, 500, 120, 50, "Atrapar", RED),
             Button(470, 500, 120, 50, "Memoria", PURPLE),
             Button(610, 500, 120, 50, "Bailar", PINK),
-            Button(750, 500, 120, 50, "Nuevo Gato", GRAY)
+            Button(750, 500, 120, 50, "Cambiar Gato", GRAY)
         ]
         
         # Botón cerrar minijuego
@@ -223,7 +223,7 @@ class Game:
         self.screen.fill(LIGHT_BLUE)
         
         # Título
-        title = self.font_large.render("Mi Gato Virtual", True, PURPLE)
+        title = self.font_large.render("Talking CAT", True, PURPLE)
         title_rect = title.get_rect(center=(WINDOW_WIDTH//2, 100))
         self.screen.blit(title, title_rect)
         
