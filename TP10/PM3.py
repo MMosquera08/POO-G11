@@ -117,7 +117,7 @@ class VirtualCat:
             self.is_blinking = True
             self.blink_timer = current_time
         
-        if self.is_blinking and current_time - self.blink_timer > 0.20:
+        if self.is_blinking and current_time - self.blink_timer > 0.15:
             self.is_blinking = False
         
         # Animaciones según el estado de ánimo
@@ -160,12 +160,12 @@ class VirtualCat:
     
     def get_status_message(self):
         messages = {
-            Mood.HAPPY: f"¡{self.name} está muy feliz!",
-            Mood.SAD: f"{self.name} está triste... necesita cuidados",
-            Mood.HUNGRY: f"{self.name} tiene hambre",
-            Mood.SLEEPY: f"{self.name} está cansado",
-            Mood.ENERGETIC: f"¡{self.name} está lleno de energía!",
-            Mood.NEUTRAL: f"{self.name} está bien"
+            Mood.HAPPY: f"¡{self.name} está muy feliz! 😸",
+            Mood.SAD: f"{self.name} está triste... necesita cuidados 😿",
+            Mood.HUNGRY: f"{self.name} tiene hambre 🍽️",
+            Mood.SLEEPY: f"{self.name} está cansado 😴",
+            Mood.ENERGETIC: f"¡{self.name} está lleno de energía! 🎾",
+            Mood.NEUTRAL: f"{self.name} está bien 😊"
         }
         return messages[self.mood]
 
@@ -198,7 +198,7 @@ class Button:
 class Game:
     def __init__(self):
         self.screen = pygame.display.set_mode((WINDOW_WIDTH, WINDOW_HEIGHT))
-        pygame.display.set_caption("Talking CAT")
+        pygame.display.set_caption("Talking CAT - Versión Realista")
         self.clock = pygame.time.Clock()
         self.font_large = pygame.font.Font(None, 48)
         self.font_medium = pygame.font.Font(None, 32)
@@ -239,12 +239,70 @@ class Game:
             Button(190, 500, 120, 50, "Dormir", LIGHT_BLUE),
             Button(330, 500, 120, 50, "Atrapar", RED),
             Button(470, 500, 120, 50, "Memoria", PURPLE),
-            Button(610, 500, 120, 50, "Palabras", PINK),
+            Button(610, 500, 120, 50, "Bailar", PINK),
             Button(750, 500, 120, 50, "Cambiar Gato", GRAY)
         ]
         
         # Botón cerrar minijuego
         self.close_minigame_button = Button(400, 600, 200, 50, "Cerrar", RED)
+
+    def draw_mouse(self, x, y, scale=1.0):
+        """Dibuja un ratón más realista (copiado del segundo código)"""
+        # Cuerpo oval del ratón
+        body_width = int(25 * scale)
+        body_height = int(15 * scale)
+        body_rect = pygame.Rect(x - body_width//2, y - body_height//2, body_width, body_height)
+        pygame.draw.ellipse(self.screen, (150, 150, 150), body_rect)
+        
+        # Cabeza más pequeña
+        head_radius = int(10 * scale)
+        head_x = x - int(12 * scale)
+        pygame.draw.circle(self.screen, (170, 170, 170), (head_x, y - int(3 * scale)), head_radius)
+        
+        # Orejas grandes y redondas
+        ear_radius = int(6 * scale)
+        pygame.draw.circle(self.screen, (140, 140, 140), 
+                         (head_x - int(8 * scale), y - int(10 * scale)), ear_radius)
+        pygame.draw.circle(self.screen, (140, 140, 140), 
+                         (head_x - int(2 * scale), y - int(12 * scale)), ear_radius)
+        
+        # Interior rosado de las orejas
+        pygame.draw.circle(self.screen, PINK, 
+                         (head_x - int(8 * scale), y - int(10 * scale)), int(3 * scale))
+        pygame.draw.circle(self.screen, PINK, 
+                         (head_x - int(2 * scale), y - int(12 * scale)), int(3 * scale))
+        
+        # Ojos pequeños y negros
+        pygame.draw.circle(self.screen, BLACK, 
+                         (head_x - int(6 * scale), y - int(6 * scale)), int(2 * scale))
+        pygame.draw.circle(self.screen, BLACK, 
+                         (head_x - int(2 * scale), y - int(7 * scale)), int(2 * scale))
+        
+        # Nariz pequeña y rosada
+        pygame.draw.circle(self.screen, PINK, 
+                         (head_x - int(4 * scale), y - int(2 * scale)), int(1 * scale))
+        
+        # Cola larga y curvada
+        tail_start_x = x + body_width//2
+        tail_end_x = tail_start_x + int(20 * scale)
+        tail_end_y = y - int(8 * scale)
+        
+        # Dibujar cola como línea gruesa
+        pygame.draw.line(self.screen, (120, 120, 120), 
+                        (tail_start_x, y), 
+                        (tail_end_x, tail_end_y), 
+                        int(3 * scale))
+        
+        # Patas pequeñas
+        paw_size = int(2 * scale)
+        pygame.draw.circle(self.screen, (130, 130, 130), 
+                         (x - int(8 * scale), y + int(8 * scale)), paw_size)
+        pygame.draw.circle(self.screen, (130, 130, 130), 
+                         (x + int(2 * scale), y + int(8 * scale)), paw_size)
+        pygame.draw.circle(self.screen, (130, 130, 130), 
+                         (x + int(8 * scale), y + int(8 * scale)), paw_size)
+        pygame.draw.circle(self.screen, (130, 130, 130), 
+                         (x - int(2 * scale), y + int(8 * scale)), paw_size)
     
     def draw_realistic_cat(self, x, y, scale=1.0):
         if not self.cat:
@@ -559,9 +617,9 @@ class Game:
         # Fondo degradado
         for y in range(WINDOW_HEIGHT):
             color_ratio = y / WINDOW_HEIGHT
-            r = int(BLUE[0] + (PURPLE[0] - BLUE[0]) * color_ratio)
-            g = int(BLUE[1] + (PURPLE[1] - BLUE[1]) * color_ratio)
-            b = int(BLUE[2] + (PURPLE[2] - BLUE[2]) * color_ratio)
+            r = int(BLUE[0] + (GREEN[0] - BLUE[0]) * color_ratio)
+            g = int(BLUE[1] + (GREEN[1] - BLUE[1]) * color_ratio)
+            b = int(BLUE[2] + (GREEN[2] - BLUE[2]) * color_ratio)
             pygame.draw.line(self.screen, (r, g, b), (0, y), (WINDOW_WIDTH, y))
         
         # Nubes decorativas
@@ -616,8 +674,8 @@ class Game:
             self.draw_catch_game()
         elif self.current_minigame == "memory":
             self.draw_memory_game()
-        elif self.current_minigame == "words":
-            self.draw_words_game()
+        elif self.current_minigame == "dance":
+            self.draw_dance_game()
         
         # Botón cerrar
         self.close_minigame_button.draw(self.screen)
@@ -626,7 +684,7 @@ class Game:
         score_text = self.font_medium.render(f"Puntos: {self.minigame_score}", True, BLACK)
         self.screen.blit(score_text, (50, 50))
     
-     def draw_catch_game(self):
+    def draw_catch_game(self):
         title = self.font_large.render("¡Atrapa los Ratones!", True, PURPLE)
         title_rect = title.get_rect(center=(WINDOW_WIDTH//2, 100))
         self.screen.blit(title, title_rect)
@@ -635,7 +693,7 @@ class Game:
         timer_text = self.font_medium.render(f"Tiempo: {int(time_left)}s", True, BLACK)
         self.screen.blit(timer_text, (50, 100))
         
-        # Dibujar ratones mejorados
+        # Dibujar ratones realistas usando la nueva función
         for mouse in self.minigame_objects:
             self.draw_mouse(mouse['pos'][0], mouse['pos'][1], 1.0)
         
@@ -665,14 +723,14 @@ class Game:
                 text_rect = question_text.get_rect(center=(x + 40, y + 40))
                 self.screen.blit(question_text, text_rect)
     
-    def draw_words_game(self):
-        title = self.font_large.render(f"¡Recuerda las palabras con {self.cat.name}!", True, PURPLE)
+    def draw_dance_game(self):
+        title = self.font_large.render(f"¡Baila con {self.cat.name}!", True, PURPLE)
         title_rect = title.get_rect(center=(WINDOW_WIDTH//2, 100))
         self.screen.blit(title, title_rect)
         
         # Mostrar secuencia actual si existe
-        if hasattr(self, 'words_sequence') and self.draw_words_game_sequence:
-            sequence_text = " ".join(self.words_sequence[:self.words_show_index + 1])
+        if hasattr(self, 'dance_sequence') and self.dance_sequence:
+            sequence_text = " ".join(self.dance_sequence[:self.dance_show_index + 1])
             seq_surface = self.font_large.render(sequence_text, True, BLACK)
             seq_rect = seq_surface.get_rect(center=(WINDOW_WIDTH//2, 250))
             self.screen.blit(seq_surface, seq_rect)
@@ -699,7 +757,7 @@ class Game:
     def start_memory_game(self):
         self.current_minigame = "memory"
         self.minigame_score = 0
-        num = ["1", "2", "3", "4", "5", "6"] * 2
+        emojis = ["🐱", "🐶", "🐰", "🐸", "🐯", "🦊"] * 2
         random.shuffle(emojis)
         
         self.minigame_objects = []
@@ -714,36 +772,30 @@ class Game:
         self.memory_flipped = []
         self.memory_flip_time = 0
     
-    def start_words_game(self):
-        self.current_minigame = "words"
+    def start_dance_game(self):
+        self.current_minigame = "dance"
         self.minigame_score = 0
-        self.words_sequence = []
-        self.words_player_sequence = []
-        self.words_directions = ["↑", "→", "↓", "←"]
-        self.words_show_index = -1
-        self.words_showing = False
-        self.generate_words_sequence()
+        self.dance_sequence = []
+        self.dance_player_sequence = []
+        self.dance_directions = ["↑", "→", "↓", "←"]
+        self.dance_show_index = -1
+        self.dance_showing = False
+        self.generate_dance_sequence()
     
-    def generate_words_sequence(self):
-        self.words_sequence.append(random.choice(self.words_directions))
-        self.show_words_sequence()
+    def generate_dance_sequence(self):
+        self.dance_sequence.append(random.choice(self.dance_directions))
+        self.show_dance_sequence()
     
-    def show_words_sequence(self):
-        self.words_showing = True
-        self.words_show_index = -1
-        self.words_show_timer = time.time()
-        self.words_player_sequence = []
-       
-    def start_catch_game(self):
-        self.current_minigame = "catch"
-        self.minigame_score = 0
-        self.minigame_objects = []
-        self.minigame_timer = time.time()
+    def show_dance_sequence(self):
+        self.dance_showing = True
+        self.dance_show_index = -1
+        self.dance_show_timer = time.time()
+        self.dance_player_sequence = []
     
     def update_minigames(self):
         current_time = time.time()
         
-       if self.current_minigame == "catch":
+        if self.current_minigame == "catch":
             # Generar ratones aleatoriamente
             if random.random() < 0.02 and len(self.minigame_objects) < 5:
                 mouse = {
@@ -824,9 +876,9 @@ class Game:
                             self.memory_flip_time = time.time()
                         return
         
-        elif self.current_minigame == "words":
+        elif self.current_minigame == "dance":
             # Verificar clic en botones de dirección
-            if not self.words_showing:
+            if not self.dance_showing:
                 directions = ["↑", "→", "↓", "←"]
                 for i, direction in enumerate(directions):
                     x = 250 + i * 120
@@ -834,23 +886,23 @@ class Game:
                     button_rect = pygame.Rect(x, y, 100, 60)
                     
                     if button_rect.collidepoint(pos):
-                        self.words_player_sequence.append(direction)
+                        self.dance_player_sequence.append(direction)
                         
                         # Verificar secuencia
-                        if len(self.words_player_sequence) <= len(self.words_sequence):
-                            if self.words_player_sequence[-1] != self.words_sequence[len(self.words_player_sequence)-1]:
+                        if len(self.dance_player_sequence) <= len(self.dance_sequence):
+                            if self.dance_player_sequence[-1] != self.dance_sequence[len(self.dance_player_sequence)-1]:
                                 # Secuencia incorrecta
                                 self.show_message("¡Secuencia incorrecta! Inténtalo de nuevo.")
-                                self.show_words_sequence()
+                                self.show_dance_sequence()
                                 return
                             
-                            if len(self.words_player_sequence) == len(self.words_sequence):
+                            if len(self.dance_player_sequence) == len(self.dance_sequence):
                                 # Secuencia completa correcta
                                 self.minigame_score += 15
-                                if len(self.words_sequence) >= 8:
+                                if len(self.dance_sequence) >= 8:
                                     self.end_minigame()
                                 else:
-                                    self.generate_words_sequence()
+                                    self.generate_dance_sequence()
                         return
     
     def end_minigame(self):
@@ -986,7 +1038,7 @@ class Game:
 
 def main():
     """
-    TALKING CAT - VERSIÓN MEJORADA CON EXPRESIONES REALISTAS
+    TALKING CAT - VERSIÓN MEJORADA CON RATONES REALISTAS
     
     Instrucciones de instalación:
     
@@ -1006,6 +1058,14 @@ def main():
     ✨ Gato con forma más realista (cuerpo alargado, patas proporcionadas)
     😸 Expresiones faciales que cambian según el estado de ánimo
     👀 Sistema de parpadeo automático
+    🐭 ¡RATONES REALISTAS EN EL MINIJUEGO DE ATRAPAR!
+       - Ratones dibujados con cuerpo oval
+       - Cabeza, orejas grandes y redondas
+       - Interior rosado en las orejas
+       - Ojos pequeños y negros
+       - Nariz rosada
+       - Cola curvada
+       - Patas pequeñas
     🎭 Animaciones específicas para cada emoción:
        - Feliz: Ojos cerrados sonriendo, cola moviéndose
        - Triste: Ojos caídos con lágrimas, orejas bajas
@@ -1017,7 +1077,7 @@ def main():
     💖 Efecto de corazones cuando acaricias al gato
     🎯 Área de clic mejorada para mejor interacción
     
-    ¡Disfruta cuidando a tu gato virtual mejorado!
+    ¡Disfruta cuidando a tu gato virtual mejorado y atrapando ratones realistas!
     """
     try:
         game = Game()
@@ -1026,5 +1086,4 @@ def main():
         print(f"Error al ejecutar el juego: {e}")
         print("Asegúrate de tener pygame instalado: pip install pygame")
 
-if __name__ == "__main__":
-    main()
+if __name__ ==
