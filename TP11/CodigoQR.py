@@ -1,233 +1,257 @@
 import qrcode
 from PIL import Image, ImageDraw
-import io
+import os
 from qrcode.image.styledpil import StyledPilImage
 from qrcode.image.styles.moduledrawers import RoundedModuleDrawer, CircleModuleDrawer, SquareModuleDrawer
 
-STYLED_QR_AVAILABLE = True
-ADVANCED_STYLES_AVAILABLE = False
+class GeneradorQR:
+    def __init__(self):
+        self.version = 1
+        self.error_correction = qrcode.constants.ERROR_CORRECT_M
+        self.box_size = 10
+        self.border = 4
+        self.data = ""
 
-class QRCode:
-    def generar_qr_basico():
-        print("🔹 Generando código QR básico...")
+    def generar_qr(self, version = 1, error_correction = 'M', box_size = 10, border = 4, data = ""):
+        self.version = version
+        self.error_correction = self.convertir_error_correction(error_correction)
+        self.box_size = box_size
+        self.border = border
+        self.data = data
+
+    def convertir_error_correction(self, nivel):
+        niveles = {
+            'L': qrcode.constants.ERROR_CORRECT_L,
+            'M': qrcode.constants.ERROR_CORRECT_M,
+            'Q': qrcode.constants.ERROR_CORRECT_Q,
+            'H': qrcode.constants.ERROR_CORRECT_H
+        }
+        return niveles.get(nivel.upper(), qrcode.constants.ERROR_CORRECT_M)
+
+    def generar_qr_basico(self, color_modulos = "black", color_fondo = "white", nombre_archivo = "qr_basico.png"):
+        print("Generando código QR básico...")
 
         # CONFIGURACIÓN BÁSICA DEL QR
         qr = qrcode.QRCode(
-            # Tamaño de la matriz 1-40.
-            version=5
-            # Nivel de corrección de errores
-            # # L: ~7% | M: ~15% | Q: ~25% | H: ~30%
-            error_correction=qrcode.constants.ERROR_CORRECT_M,
-            # Tamaño de cada módulo en píxeles
-            box_size=15
-            # Zona de silencio
-            border=2
+            version = self.version,
+            error_correction = self.error_correction,
+            box_size = self.box_size,
+            border = self.border
             )
         
         # CONTENIDO DEL QR
-        datos = "¡Hola estudiantes del ISP! 👋" 
-        qr.add_data(datos)
+        qr.add_data(self.data)
         qr.make(fit=True)
         
         # GENERACIÓN DE IMAGEN BÁSICA
         img = qr.make_image(
-            fill_color="black",     # Color de los módulos
-            back_color="white"      # Color de fondo
+            fill_color = color_modulos,
+            back_color = color_fondo
             )
-        # Guardar imagen
-        img.save("/TP11/qr_basico.png")
-        print("✅ QR básico guardado como 'qr_basico.png'")
-        return qr
+        img.save(f"{nombre_archivo}")
+        print(f"QR básico guardado como '{nombre_archivo}'")
+        return img
     
-    def generar_qr_colores():
-        print("\n🎨 Generando código QR con colores personalizados...")
+    def generar_qr_con_estilo(self, estilo = "redondeado", color_modulos = "#2E86AB", color_fondo = "#F24236", nombre_archivo = "qr_con_estilo.png"):
+        print("Generando código QR con colores personalizados...")
         qr = qrcode.QRCode(
-            version=1,
-            error_correction=qrcode.constants.ERROR_CORRECT_M,
-            box_size=12,
-            border=4,
+            version = self.version,
+            error_correction = self.error_correction,
+            box_size = self.box_size,
+            border = self.border,
             )
-        qr.add_data("Código QR con colores personalizados")
+        qr.add_data(self.data)
         qr.make(fit=True)
-        
-        # COLORES PERSONALIZADOS
+        if estilo.lower() == "redondeado":
+            drawer = RoundedModuleDrawer()
+        elif estilo.lower() == "circular":
+            drawer = CircleModuleDrawer()
+        else:
+            drawer = SquareModuleDrawer()
         img = qr.make_image(
-            fill_color="#2E86AB",
-            back_color="#F24236"
-            # fill_color="#FF6B6B",    # Rojo coral
-            # back_color="#4ECDC4"     # Verde agua
-            # fill_color="purple",     # Púrpura
-            # back_color="lightgray"   # Gris claro
-            )
-        img.save("/TP11/qr_colores.png")
-        print("✅ QR con colores guardado como 'qr_colores.png'")
+            image_factory = StyledPilImage,
+            module_drawer = drawer,
+            fill_color = color_modulos,
+            back_color = color_fondo
+        )
+        img.save(f"{nombre_archivo}")
+        print(f"QR con estilo guardado como '{nombre_archivo}'")
+        return img
         
-    def generar_qr_con_estilo():
-        print("\n✨ Generando código QR con formas personalizadas...")
+    def generar_qr_con_logo(self, color_logo = (255, 100, 100), nombre_archivo = "qr_con_logo.png"):
+        print("Generando código QR con logotipo...")
         qr = qrcode.QRCode(
-            version=2,
-            error_correction=qrcode.constants.ERROR_CORRECT_H,
-            box_size=15,
-            border=4,
+            version = self.version,
+            error_correction = qrcode.constants.ERROR_CORRECT_H,
+            box_size = self.box_size,
+            border = self.border,
             )
-        qr.add_data("QR con formas personalizadas - Módulos redondeados")
+        qr.add_data(self.data)
         qr.make(fit=True)
-        
-        # FORMAS PERSONALIZADAS DE MÓDULOS
-        # 1. Módulos redondeados
-        drawer = RoundedModuleDrawer()
-        # 2. Módulos circulares
-        # drawer = CircleModuleDrawer()
-        # 3. Módulos cuadrados tradicionales
-        # drawer = SquareModuleDrawer()
-        
-        # GENERAR IMAGEN CON FORMAS PERSONALIZADAS Y COLORES
-        img = qr.make_image(
-            image_factory=StyledPilImage,
-            module_drawer=drawer,
-            fill_color="#4A90E2",
-            back_color="#F0F8FF"
-            # fill_color="#FF6B6B",    # Rojo coral (descomenta para usar)
-            # back_color="#FFE5B4"     # Melocotón claro (descomenta para usar)
-            # fill_color="#32CD32",    # Verde lima (descomenta para usar)  
-            # back_color="#F0FFF0"     # Verde muy claro (descomenta para usar)
-            )
-        img.save("/TP11/qr_estilizado.png")
-        print("✅ QR estilizado guardado como 'qr_estilizado.png'")
-        
-    def generar_qr_con_logo():
-        print("\n🖼️  Generando código QR con logotipo...")
-        qr = qrcode.QRCode(
-            version=3,
-            error_correction=qrcode.constants.ERROR_CORRECT_H,
-            box_size=10,
-            border=4,
-            )
-        qr.add_data("QR con logotipo - Mayor corrección de errores")
-        qr.make(fit=True)
-        # Generar QR base
-        img = qr.make_image(fill_color="black", back_color="white")
-        
-        # CREAR UN LOGO SIMPLE (círculo con texto)
-        logo_size = 60
-        logo = Image.new('RGBA', (logo_size, logo_size), (255, 255, 255, 0))
-        draw = ImageDraw.Draw(logo)
-        # Dibujar círculo de fondo
-        draw.ellipse([5, 5, logo_size-5, logo_size-5], fill=(255, 100, 100, 255))
-        # Convertir a RGB para compatibilidad
-        logo = logo.convert('RGB')
-        
-        # INSERTAR LOGO EN EL CENTRO DEL QR
-        # Calcular posición central
+        img = qr.make_image(fill_color = "black", back_color = "white")
         img = img.convert('RGB')
+        
+        # CREAR UN LOGO SIMPLE
+        logo_size = 60
+        logo = Image.new('RGB', (logo_size, logo_size), (255, 255, 255))
+        draw = ImageDraw.Draw(logo)
+
+        # INSERTAR LOGO EN EL CENTRO DEL QR
+        draw.ellipse([5, 5, logo_size-5, logo_size-5], fill = color_logo)
         pos = ((img.size[0] - logo.size[0]) // 2, (img.size[1] - logo.size[1]) // 2)
-        # Pegar el logo
         img.paste(logo, pos)
-        img.save("/TP11/qr_con_logo.png")
-        print("✅ QR con logo guardado como 'qr_con_logo.png'")
-        
-    def generar_qr_transparente():
-        print("\n🌈 Generando código QR con transparencia...")
-        qr = qrcode.QRCode(
-            version=2,
-            error_correction=qrcode.constants.ERROR_CORRECT_M,
-            box_size=12,
-            border=4,
-            )
-        qr.add_data("QR con efectos de transparencia")
-        qr.make(fit=True)
-        # Generar imagen base
-        img = qr.make_image(fill_color="black", back_color="white")
-        
-        # CONVERTIR A RGBA PARA MANEJAR TRANSPARENCIA
-        img = img.convert('RGBA')
-        # Crear una nueva imagen con fondo transparente
-        transparent_img = Image.new('RGBA', img.size, (255, 255, 255, 0))
-        
-        # APLICAR TRANSPARENCIA A LOS MÓDULOS
-        data = img.getdata()
-        new_data = []
-        for pixel in data:
-            if pixel[0] < 128:  # Píxel oscuro
-                new_data.append((0, 100, 200, 180))  # Azul semi-transparente
-                else:  # Píxel claro (fondo)
-                new_data.append((255, 255, 255, 50))   # Blanco muy transparente
-                # new_data.append((255, 255, 255, 0))   # Totalmente transparente
-                transparent_img.putdata(new_data)
-                # Guardar como PNG para preservar transparencia
-                transparent_img.save("/TP11/qr_transparente.png")
-                print("✅ QR transparente guardado como 'qr_transparente.png'")
-                
-    def mostrar_configuraciones_avanzadas():
-        print("\n📚 CONFIGURACIONES AVANZADAS DISPONIBLES:")
-        print("=" * 50)
+        img.save(f"{nombre_archivo}")
+        print(f"QR con logo guardado como '{nombre_archivo}'")
+        return img
+    
+    def mostrar_configuracion_actual(self):
+        print("CONFIGURACIÓN ACTUAL:")
+        print(f"Versión (tamaño): {self.version}")
+        print(f"Corrección de errores: {self.error_correction}")
+        print(f"Tamaño de módulos: {self.box_size}")
+        print(f"Borde: {self.border}")
+        print(f"Datos: '{self.data}'")
 
-        print("\n🔢 TAMAÑOS DE MATRIZ (version):")
-        print("  version=1  -> 21x21 módulos (más pequeño)")
-        print("  version=5  -> 37x37 módulos") 
-        print("  version=10 -> 57x57 módulos")
-        print("  version=40 -> 177x177 módulos (más grande)")
+def mostrar_menu():
+    print("GENERADOR DE CÓDIGOS QR")
+    print("1. Configurar parámetros del QR")
+    print("2. Generar QR básico")
+    print("3. Generar QR estilizado")
+    print("4. Generar QR con logo")
+    print("5. Ver configuración actual")
+    print("6. Ver ayuda")
+    print("0. Salir")
 
-        print("\n🛡️  NIVELES DE CORRECCIÓN DE ERRORES:")
-        print("  ERROR_CORRECT_L -> ~7%  corrección (menos robusto)")
-        print("  ERROR_CORRECT_M -> ~15% corrección (recomendado)")
-        print("  ERROR_CORRECT_Q -> ~25% corrección")
-        print("  ERROR_CORRECT_H -> ~30% corrección (para logos)")
+def obtener_datos_qr():
+    print("INGRESA LOS DATOS PARA EL QR:")
+    while True:
+        datos = input("Escribe el texto o URL: ").strip()
+        if datos:
+            return datos
+        print("¡Debes ingresar algún texto o URL!")
 
-        print("\n📏 TAMAÑO DE MÓDULOS (box_size):")
-        print("  box_size=5  -> Módulos pequeños")
-        print("  box_size=10 -> Tamaño estándar") 
-        print("  box_size=20 -> Módulos grandes")
+def configurar_parametros(generador):
+    print("CONFIGURACIÓN DE PARÁMETROS:")
+    print("Tamaño de la matriz (1-40, donde 1 es la más pequeña):")
+    try:
+        version = int(input(f"Versión actual: {generador.version} | Nueva versión (1-40): ") or generador.version)
+        generador.version = max(1, min(40, version))
+    except ValueError:
+        print("Valor inválido, manteniendo configuración actual")
+    print("Nivel de corrección de errores:")
+    print("L: ~7% | M: ~15% | Q: ~25% | H: ~30%")
+    error = input(f"Nivel actual: {generador.error_correction} | Nuevo nivel (L/M/Q/H): ").upper()
+    if error in ['L', 'M', 'Q', 'H']:
+        generador.error_correction = generador.convertir_error_correction(error)
+    print("Tamaño de cada módulo en píxeles:")
+    try:
+        box_size = int(input(f"Tamaño actual: {generador.box_size} | Nuevo tamaño (5-25): ") or generador.box_size)
+        generador.box_size = max(5, min(25, box_size))
+    except ValueError:
+        print("Valor inválido, manteniendo configuración actual")
+    print("Tamaño de la zona de silencio:")
+    try:
+        border = int(input(f"Borde actual: {generador.border} | Nuevo borde (1-10): ") or generador.border)
+        generador.border = max(1, min(10, border))
+    except ValueError:
+        print("Valor inválido, manteniendo configuración actual")
+    print("Configuración actualizada!")
 
-        print("\n🎨 FORMAS DE MÓDULOS:")
-        print("  RoundedModuleDrawer() -> Esquinas redondeadas")
-        print("  CircleModuleDrawer()  -> Círculos")
-        print("  SquareModuleDrawer()  -> Cuadrados tradicionales")
+def elegir_colores():
+    print("COLORES DISPONIBLES:")
+    colores = {
+        '1': ('black', 'white'),
+        '2': ('#FF6B6B', '#FFE5B4'),
+        '3': ('#4A90E2', '#F0F8FF'),
+        '4': ('#32CD32', '#F0FFF0'),
+        '5': ('#9B59B6', '#F8F0FF'),
+        '6': ('#FF8C00', '#FFF8E1')
+    }
+    print("1. Negro sobre blanco")
+    print("2. Rojo coral sobre melocotón")
+    print("3. Azul sobre azul claro")
+    print("4. Verde lima sobre verde claro")
+    print("5. Púrpura sobre lila")
+    print("6. Naranja sobre crema")
+    eleccion = input("Elige una opción (1-6): ")
+    return colores.get(eleccion, ('black', 'white'))
 
-        print("\n🌈 COLORES PERSONALIZADOS:")
-        print("  fill_color='#4A90E2'  -> Azul para módulos")
-        print("  back_color='#F0F8FF'  -> Azul claro para fondo")
-        print("  fill_color='#FF6B6B'  -> Rojo coral para módulos")
-        print("  back_color='#FFE5B4'  -> Melocotón para fondo")
-        print("  fill_color='#32CD32'  -> Verde lima para módulos")
-        print("\n⚠️  NOTA: Los gradientes avanzados no están disponibles en esta versión")
+def mostrar_ayuda():
+    print("AYUDA - GENERADOR DE CÓDIGOS QR")
+    print("TAMAÑOS DE MATRIZ (version):")
+    print("version = 1 -> 21x21 módulos (más pequeño)")
+    print("version = 5 -> 37x37 módulos") 
+    print("version = 10 -> 57x57 módulos")
+    print("version = 40 -> 177x177 módulos (más grande)")
+    print("NIVELES DE CORRECCIÓN DE ERRORES:")
+    print("ERROR_CORRECT_L -> ~7%  corrección (menos robusto)")
+    print("ERROR_CORRECT_M -> ~15% corrección (recomendado)")
+    print("ERROR_CORRECT_Q -> ~25% corrección")
+    print("ERROR_CORRECT_H -> ~30% corrección (para logos)")
+    print("FORMAS DE MÓDULOS:")
+    print("RoundedModuleDrawer() -> Esquinas redondeadas")
+    print("CircleModuleDrawer() -> Círculos")
+    print("SquareModuleDrawer() -> Cuadrados tradicionales")
 
-        print("\n💾 FORMATOS DE SALIDA:")
-        print("  .png -> Mejor para web y transparencias")
-        print("  .jpg -> Menor tamaño de archivo")
-        print("  .svg -> Vectorial, escalable sin pérdida")
-        print("  .pdf -> Para documentos")
-        
-    def main():
-        print("🚀 GENERADOR DE CÓDIGOS QR - EJEMPLOS EDUCATIVOS")
-        print("=" * 55)
-        # Crear directorio si no existe
-        import os
-        os.makedirs("/TP11", exist_ok=True)
-        # Ejecutar todos los ejemplos
-        generar_qr_basico()
-        generar_qr_colores()
-        generar_qr_con_estilo()
-        generar_qr_con_logo()
-        generar_qr_transparente()
-        # Mostrar información educativa
-        mostrar_configuraciones_avanzadas()
-        print("\n🎉 ¡Todos los ejemplos generados exitosamente!")
-        print("📁 Archivos guardados en: /TP11/")
-        print("\n💡 PARA EXPERIMENTAR:")
-        print("   1. Descomenta diferentes configuraciones en el código")
-        print("   2. Cambia los valores de los parámetros")
-        print("   3. Prueba diferentes combinaciones de colores y estilos")
-        print("   4. Experimenta con diferentes niveles de corrección")
-        
-# INSTRUCCIONES PARA INSTALAR DEPENDENCIAS
-"""
-Para ejecutar este código, instala las dependencias necesarias:
-pip install qrcode
-pip install pillow
-O si usas conda:
-conda install -c conda-forge qrcode pillow
-"""
+def main():
+    os.makedirs("QR_Generados", exist_ok = True)
+    os.chdir("QR_Generados")
+    generador = GeneradorQR()
+    while True:
+        mostrar_menu()
+        opcion = input("Selecciona una opción: ")
+        if opcion == '1':
+            configurar_parametros(generador)
+        elif opcion == '2':
+            if not generador.data:
+                generador.data = obtener_datos_qr()
+            color_modulos, color_fondo = elegir_colores()
+            nombre = input("Nombre del archivo (sin extensión): ") or "qr_basico"
+            generador.generar_qr_basico(color_modulos, color_fondo, f"{nombre}.png")
+            generador.data = ""
+        elif opcion == '3':
+            if not generador.data:
+                generador.data = obtener_datos_qr()
+            print("ESTILOS DISPONIBLES:")
+            print("1. Redondeado")
+            print("2. Circular") 
+            print("3. Cuadrado")
+            estilo_num = input("Elige estilo (1-3): ")
+            estilos = {'1': 'redondeado', '2': 'circular', '3': 'cuadrado'}
+            estilo = estilos.get(estilo_num, 'redondeado')
+            color_modulos, color_fondo = elegir_colores()
+            nombre = input("Nombre del archivo (sin extensión): ") or "qr_estilizado"
+            generador.generar_qr_con_estilo(estilo, color_modulos, color_fondo, f"{nombre}.png")
+            generador.data = ""
+        elif opcion == '4':
+            if not generador.data:
+                generador.data = obtener_datos_qr()
+            print("COLOR DEL LOGO:")
+            print("1. Rojo  2. Azul  3. Verde  4. Púrpura  5. Naranja")
+            color_num = input("Elige color (1-5): ")
+            colores_logo = {
+                '1': (255, 100, 100),
+                '2': (100, 150, 255),
+                '3': (100, 200, 100),
+                '4': (150, 100, 200),
+                '5': (255, 150, 50)
+            }
+            color_logo = colores_logo.get(color_num, (255, 100, 100))
+            nombre = input("Nombre del archivo (sin extensión): ") or "qr_con_logo"
+            generador.generar_qr_con_logo(color_logo, f"{nombre}.png")
+            generador.data = ""
+        elif opcion == '5':
+            generador.mostrar_configuracion_actual()
+        elif opcion == '6':
+            mostrar_ayuda()
+        elif opcion == '0':
+            print("¡Gracias por usar el generador de QR!")
+            break
+        else:
+            print("Opción no válida")
+        input("Presiona Enter para continuar...")
 
 if __name__ == "__main__":
+    print("Instalación requerida:")
+    print("pip install qrcode pillow")
     main()
